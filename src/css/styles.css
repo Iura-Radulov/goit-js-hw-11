@@ -20,9 +20,23 @@ ul {
   margin-top: 0;
 }
 
-#search-box {
+#search-form {
+  text-align: center;
+  background-color: aqua;
   font: inherit;
-  padding: 8px;
-  max-width: 320px;
+  padding: 10px;
+
   margin-bottom: 16px;
+}
+
+#search-form input {
+  height: 30px;
+}
+#search-form button {
+  margin-left: 5px;
+}
+
+.button-in {
+  /* display: block; */
+  text-align: center;
 }

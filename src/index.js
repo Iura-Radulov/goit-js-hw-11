@@ -1,15 +1,19 @@
 import './css/styles.css';
-// import Notiflix from 'notiflix';
-// import { fetchCountries } from "./fetchCountries";
+import Notiflix from 'notiflix';
+import { PictureApiService } from "./fetchImages";
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
-// const debounce = require('lodash.debounce');
-// const DEBOUNCE_DELAY = 300;
-// const refs = {
-//     searchBox: document.querySelector("#search-box"),
-//     countryList: document.querySelector(".country-list"),
-//     countryInfo: document.querySelector(".country-info"),
-// }
 
+
+const refs = {
+    searchForm: document.querySelector("#search-form"),
+    gallery: document.querySelector(".gallery"),
+    
+}
+
+const pictureApiService = new PictureApiService()
+pictureApiService.fetchPictures()
 // refs.searchBox.addEventListener("input", debounce(onTextInput, DEBOUNCE_DELAY));
 
 // function onTextInput(e) {
