@@ -19,14 +19,16 @@ ul {
   padding-left: 0;
   margin-top: 0;
 }
-
+a {
+  text-decoration: none;
+}
 #search-form {
   text-align: center;
   background-color: aqua;
   font: inherit;
   padding: 10px;
 
-  margin-bottom: 16px;
+  padding-bottom: 16px;
 }
 
 #search-form input {
@@ -39,4 +41,18 @@ ul {
 .button-in {
   /* display: block; */
   text-align: center;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gallery__item {
+  margin: 5px;
+}
+
+.info {
+  display: flex;
 }
