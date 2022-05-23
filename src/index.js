@@ -4,48 +4,50 @@ import { fetchPictures } from "./fetchImages";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-
-
 const refs = {
     searchForm: document.querySelector("#search-form"),
     inputEl: document.querySelector("input[name='searchQuery']"),
     gallery: document.querySelector(".gallery"),
+    btnEl: document.querySelector(".load-more"),
     
 }
 let page = 1;
 const perPage = 40;
+let inputValue = "";
 
 refs.searchForm.addEventListener("submit", onFormSubmit);
 
 async function onFormSubmit(evt) {
     evt.preventDefault();
     
-    const inputValue = refs.inputEl.value;
-     evt.currentTarget.reset();
-    try {
-        
+    inputValue = refs.inputEl.value;
+    evt.currentTarget.reset();
+    refs.gallery.innerHTML = "";
+    page = 1;
+
+    try {        
         const pictures = await fetchPictures(inputValue, page, perPage)
          if (pictures.hits.length === 0) {
             Notiflix.Notify.info("Sorry, there are no images matching your search query. Please try again.");
         }
     
         renderDate(pictures);
-       
+        loadMore();
+        Notiflix.Notify.info(`Hooray! We found ${pictures.total} images.`);
        
     } catch(error) {
         console.log(error);
         
     }
-    
+    return inputValue;
 }
 
 function renderDate(pictures) {
-
     const markup = pictures.hits.map((picture) => {
         const { webformatURL, largeImageURL, tags, likes, views, comments, downloads } = picture;
-        return `<a class="gallery__item" href="${largeImageURL}">
-        <div class="photo-card">
-    <img src=${webformatURL} alt=${tags} width="300" loading="lazy" />
+        return `<div class="photo-card">
+        <a class="gallery__item" href="${largeImageURL}">
+    <img src=${webformatURL} alt=${tags} height="240" loading="lazy" /></a>
     <div class="info">
         <p class="info-item">
         <b>Likes</b>: <br> ${likes}
@@ -60,62 +62,49 @@ function renderDate(pictures) {
         <b>Downloads</b>: <br> ${downloads}
         </p>
   </div>
-</div></a>`
+</div>`
     }
     ).join("");
-    refs.gallery.innerHTML = markup;
-
+    refs.gallery.insertAdjacentHTML("beforeend", markup);
+    galleryLightBox();
+    slowLoad();
 }
-// function onTextInput(e) {
-//     const inputValue = e.target.value.trim();
-//     if (inputValue === "") {
-//         clearInterface()
-//         return;
-//     };
 
-//     fetchCountries(inputValue)
-//         .then(renderCountries)
-//         .catch(() => {
-//             Notiflix.Notify.failure("Oops, there is no country with that name.")
-//             clearInterface()
-//         });
-// }
+function loadMore() {
+    refs.btnEl.classList.remove("is-hiden");
+    page += 1;
+    refs.btnEl.addEventListener("click", onLoadMoreBtnSubmit)
+}
 
-// function renderCountries(countries) {
+async function onLoadMoreBtnSubmit() {
+    try {        
+        const pictures = await fetchPictures(inputValue, page, perPage)
+        if (page >= pictures.total / perPage) {
+           refs.btnEl.classList.add("is-hiden");  
+            Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        }
     
-//     if (countries.length > 10) {
-//         clearInterface();
-//        return Notiflix.Notify.info("Too many matches found. Please enter a more specific name.");
-//     };
-//     if (countries.length >= 2 & countries.length <= 10) {
-//         const markup = countries.map(country => {
-//             const { flags, name} = country;
-//             return `<li>
-//       <img src="${flags.svg}" alt="${name.official}" width="50">
-//       <span>${name.official}</span>
-//         </li>`
-//         }).join("");
-//         refs.countryList.innerHTML = markup;
-//         refs.countryInfo.innerHTML = "";
-//     };
+        renderDate(pictures);
+        loadMore();
+       
+    } catch(error) {
+        console.log(error);        
+    }    
+}
 
-//     if (countries.length === 1) {
-//         refs.countryList.innerHTML = "";
-//         const markup = countries.map(country => {
-//             const { flags, name, capital, population, languages } = country;
-//             return `<p>
-//       <img src="${flags.svg}" alt="${name.official}" width="70">
-//       <h2>${name.official}</h2>
-//         </p>
-//         <p><b>Capital:</b>${capital}</p>
-//         <p><b>Population:</b>${population}</p>
-//         <p><b>Languages:</b>${Object.values(languages)}</p>`
-//         }).join("");
-//         refs.countryInfo.innerHTML = markup;        
-//     }
-// }
+function galleryLightBox() {
+    let gallery = new SimpleLightbox('.gallery a', {captionsData: "alt", captionDelay: 250});
+    gallery.on('show.simplelightbox');
+    gallery.refresh();
+}
 
-// function clearInterface() {
-//     refs.countryList.innerHTML = "";
-//     refs.countryInfo.innerHTML = "";
-// }
+function slowLoad() {
+    const { height: cardHeight } = document
+  .querySelector(".gallery")
+  .firstElementChild.getBoundingClientRect();
+
+window.scrollBy({
+  top: cardHeight * 2,
+  behavior: "smooth",
+});
+}

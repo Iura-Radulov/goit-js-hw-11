@@ -56,3 +56,9 @@ a {
 .info {
   display: flex;
 }
+.is-hiden {
+  display: none;
+}
+/* .load-more .is-hiden {
+  display: none;
+} */
