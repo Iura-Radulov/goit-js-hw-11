@@ -2,11 +2,11 @@ import './css/styles.css';
 import Notiflix from 'notiflix';
 import { fetchPictures } from "./fetchImages";
 import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
 
 const refs = {
     searchForm: document.querySelector("#search-form"),
     inputEl: document.querySelector("input[name='searchQuery']"),
+    btnSubmit: document.querySelector("button[type='submit']"),
     gallery: document.querySelector(".gallery"),
     btnEl: document.querySelector(".load-more"),
     
@@ -19,10 +19,10 @@ refs.searchForm.addEventListener("submit", onFormSubmit);
 
 async function onFormSubmit(evt) {
     evt.preventDefault();
-    
-    inputValue = refs.inputEl.value;
-    evt.currentTarget.reset();
+    refs.btnSubmit.disabled = true;
+    inputValue = refs.inputEl.value;   
     refs.gallery.innerHTML = "";
+    refs.btnEl.classList.add("is-hiden");
     page = 1;
 
     try {        
@@ -30,7 +30,7 @@ async function onFormSubmit(evt) {
          if (pictures.hits.length === 0) {
             Notiflix.Notify.info("Sorry, there are no images matching your search query. Please try again.");
         }
-    
+        
         renderDate(pictures);
         loadMore();
         Notiflix.Notify.info(`Hooray! We found ${pictures.total} images.`);
@@ -39,6 +39,7 @@ async function onFormSubmit(evt) {
         console.log(error);
         
     }
+    refs.btnSubmit.disabled = false;
     return inputValue;
 }
 
@@ -47,19 +48,19 @@ function renderDate(pictures) {
         const { webformatURL, largeImageURL, tags, likes, views, comments, downloads } = picture;
         return `<div class="photo-card">
         <a class="gallery__item" href="${largeImageURL}">
-    <img src=${webformatURL} alt=${tags} height="240" loading="lazy" /></a>
+    <img src=${webformatURL} alt=${tags} class="gallery__image" height="240" loading="lazy" /></a>
     <div class="info">
         <p class="info-item">
-        <b>Likes</b>: <br> ${likes}
+        <b>Likes:</b> ${likes}
         </p>
         <p class="info-item">
-        <b>Views</b>: <br> ${views}
+        <b>Views:</b> ${views}
         </p>
         <p class="info-item">
-        <b>Comments</b>: <br> ${comments}
+        <b>Comments:</b> ${comments}
         </p>
         <p class="info-item">
-        <b>Downloads</b>: <br> ${downloads}
+        <b>Downloads:</b> ${downloads}
         </p>
   </div>
 </div>`
@@ -93,7 +94,7 @@ async function onLoadMoreBtnSubmit() {
 }
 
 function galleryLightBox() {
-    let gallery = new SimpleLightbox('.gallery a', {captionsData: "alt", captionDelay: 250});
+    let gallery = new SimpleLightbox('.gallery a', { captionDelay: 250});
     gallery.on('show.simplelightbox');
     gallery.refresh();
 }
@@ -104,7 +105,7 @@ function slowLoad() {
   .firstElementChild.getBoundingClientRect();
 
 window.scrollBy({
-  top: cardHeight * 2,
+  top: cardHeight * 1.2,
   behavior: "smooth",
 });
 }
