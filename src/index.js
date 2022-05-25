@@ -79,14 +79,15 @@ function loadMore() {
 
 async function onLoadMoreBtnSubmit() {
     try {        
-        const pictures = await fetchPictures(inputValue, page, perPage)
-        if (page >= pictures.total / perPage) {
+        const pictures = await fetchPictures(inputValue, page, perPage);
+          
+        renderDate(pictures);
+        loadMore();
+
+         if (page >= pictures.total / perPage) {
            refs.btnEl.classList.add("is-hiden");  
             Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
         }
-    
-        renderDate(pictures);
-        loadMore();
        
     } catch(error) {
         console.log(error);        
